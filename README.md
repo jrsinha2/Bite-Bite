@@ -1,5 +1,6 @@
 # Bite-Bite
-A simple game written in Python using PyGame module
+A simple game written in Python using PyGame module.
+
 Application of Object Oriented Programming in Python.
 
 Features in game:

@@ -22,6 +22,6 @@ class Apple:
     
     def draw(self):
         #print(self.x_pos,self.y_pos)
-        return pygame.draw.rect(self.display,Config['colors']['red'],[ 
+        return pygame.draw.rect(self.display,Config['colors']['bright_red'],[ 
             self.x_pos,self.y_pos,Config['apple']['height'],Config['apple']['width']
         ])

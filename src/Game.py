@@ -6,6 +6,7 @@ class Game:
     def __init__(self,display):  #constructor
         self.display = display
         self.score = 0
+    
     def start_screen(self):
         clock = pygame.time.Clock() #get time (initializing time)
         self.display.fill(Config['colors']['green']) #wipe old position  
@@ -32,39 +33,11 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
                         self.loop()
+                
                     
             pygame.display.update()
             clock.tick(Config['game']['fps']) #to slow time rate (30 frames per second)
-    def end_screen(self,score):
-        clock = pygame.time.Clock() #get time (initializing time)
-        self.display.fill(Config['colors']['green']) #wipe old position  
-        pygame.draw.rect(self.display,Config['colors']['black'],[ 
-                Config['game']['bumper_size'],
-                Config['game']['bumper_size'],
-                Config['game']['height'] - Config['game']['bumper_size']*2,
-                Config['game']['width'] - Config['game']['bumper_size']*2 ] )
-        
-        text = "Game Over Your Score : {}".format(score)
-        pygame.font.init()
-        font = pygame.font.Font('./assets/Now-Regular.otf',28)  #load font from assets #font in object
-        end_text = font.render(text,True,Config['colors']['white'])
-        end_text_rect = end_text.get_rect(
-                center = (
-                    Config['game']['width']/2,   #width of box
-                    Config['game']['height']/2  #height of box
-                )
-            )
-        self.display.blit(end_text,end_text_rect)
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    exit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        self.loop()
-                    
-            pygame.display.update()
-            clock.tick(Config['game']['fps']) #to slow time rate (30 frames per second)
+    
     
     def loop(self):
         clock = pygame.time.Clock() #get time (initializing time)
@@ -137,7 +110,7 @@ class Game:
 
             score_rect = score.get_rect(
                 center = (
-                    500/2,
+                    Config['game']['width']/2,
                     Config['game']['height']-Config['game']['bumper_size']/2
                 )
             )
@@ -147,3 +120,35 @@ class Game:
             
             pygame.display.update()
             clock.tick(Config['game']['fps']) #to slow time rate (30 frames per second) 
+
+    def end_screen(self,score):
+        clock = pygame.time.Clock() #get time (initializing time)
+        self.display.fill(Config['colors']['green']) #wipe old position  
+        pygame.draw.rect(self.display,Config['colors']['black'],[ 
+                Config['game']['bumper_size'],
+                Config['game']['bumper_size'],
+                Config['game']['height'] - Config['game']['bumper_size']*2,
+                Config['game']['width'] - Config['game']['bumper_size']*2 ] )
+        
+        text = "Game Over Your Score : {}".format(score)
+        pygame.font.init()
+        font = pygame.font.Font('./assets/Now-Regular.otf',28)  #load font from assets #font in object
+        end_text = font.render(text,True,Config['colors']['white'])
+        end_text_rect = end_text.get_rect(
+                center = (
+                    Config['game']['width']/2,   #width of box
+                    Config['game']['height']/2  #height of box
+                )
+            )
+        self.display.blit(end_text,end_text_rect)
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        self.loop()
+                    
+            pygame.display.update()
+            clock.tick(Config['game']['fps']) #to slow time rate (30 frames per second)
+    

@@ -13,7 +13,7 @@ Future Improvements:
   * Database for HighScore
   * Levels
 
-Reference: https://medium.com/@jodylecompte/code-your-first-game-in-pygame-5585dfcc6388
+Reference: https://pythonprogramming.net/pygame-python-3-part-1-intro/
 
 My Addition:
  * Start-Menu

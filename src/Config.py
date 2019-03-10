@@ -1,9 +1,9 @@
 Config = {
     'game' : {
         'caption': 'Bite-Bite',
-        'height': 500,
-        'width':500,
-        'fps':30,
+        'height': 600,
+        'width':600,
+        'fps':25,
         'bumper_size' : 25
     },
     'snake' : {

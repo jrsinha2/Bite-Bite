@@ -1,1 +1,10 @@
-
+Alice,5
+Sinha,4
+sinha,3
+jack,3
+Sinha,3
+Bob,3
+Sinha,2
+SSS,2
+Adi,2
+Sinha,1

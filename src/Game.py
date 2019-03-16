@@ -7,6 +7,7 @@ class Game:
         self.display = display
         self.score = 0
         self.pause = False
+        self.file_name = "src\highscore.txt"
     
     def start_screen(self):
         clock = pygame.time.Clock() #get time (initializing time)
@@ -16,17 +17,17 @@ class Game:
                 Config['game']['bumper_size'],
                 Config['game']['height'] - Config['game']['bumper_size']*2,
                 Config['game']['width'] - Config['game']['bumper_size']*2 ] )
-        text = "Welcome to Bite-Bite"
+        #text = "Welcome to Bite-Bite"
         pygame.font.init()
         font = pygame.font.Font('./assets/Now-Regular.otf',28)  #load font from assets #font in object
-        start_text = font.render(text,True,Config['colors']['white'])
-        start_text_rect = start_text.get_rect(
-                center = (
-                    Config['game']['width']/2,   #width of box
-                    Config['game']['height']/4  #height of box
-                )
-            )
-        self.display.blit(start_text,start_text_rect)
+        #start_text = font.render(text,True,Config['colors']['white'])
+        #start_text_rect = start_text.get_rect(
+        #        center = (
+        #            Config['game']['width']/2,   #width of box
+        #            Config['game']['height']/4  #height of box
+        #        )
+        #    )
+        #self.display.blit(start_text,start_text_rect)
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -36,7 +37,7 @@ class Game:
                         self.loop()
             mouse = pygame.mouse.get_pos()
             start_menu_pos_x = Config['game']['width']/2
-            start_menu_pos_y = 4*Config['game']['height']/8
+            start_menu_pos_y = 2*Config['game']['height']/8
             start_menu_height = Config['game']['height']*0.1
             start_menu_width =  Config['game']['width']*0.25
             start_menu_text = "Play"
@@ -47,9 +48,13 @@ class Game:
             quit_menu_width =  Config['game']['width']*0.25
             quit_menu_text = "Quit"
             
+            highscore_menu_pos_x = Config['game']['width']/2
+            highscore_menu_pos_y = 4*Config['game']['height']/8
+            highscore_menu_text = "Highscore"
             #interactive buttons
             self.button(start_menu_text,start_menu_pos_x,start_menu_pos_y,start_menu_width,start_menu_height,Config['colors']['green'],Config['colors']['bright_green'],Config['colors']['white'],self.loop)
             self.button(quit_menu_text,quit_menu_pos_x,quit_menu_pos_y,quit_menu_width,quit_menu_height,Config['colors']['red'],Config['colors']['bright_red'],Config['colors']['white'],exit)
+            self.button(highscore_menu_text,highscore_menu_pos_x,highscore_menu_pos_y,quit_menu_width,quit_menu_height,Config['colors']['yellow'],Config['colors']['light_yellow'],Config['colors']['white'],self.show_top10)
             
             '''if start_menu_pos_x + start_menu_width/2 > mouse[0] > start_menu_pos_x-start_menu_width/2 and  start_menu_pos_y + start_menu_height/2 > mouse[1] > start_menu_pos_y- start_menu_height/2 :
                 pygame.draw.rect(self.display,Config['colors']['bright_green'],
@@ -240,8 +245,10 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN or event.key == pygame.K_ESCAPE:
                         self.unpause()
-            self.button("Quit",pos_x,pos_y+150,width,height,Config['colors']['red'],Config['colors']['bright_red'],text_color,exit)
+            self.button("Quit",pos_x,pos_y+190,width,height,Config['colors']['red'],Config['colors']['bright_red'],text_color,exit)
             self.button("Continue",pos_x,pos_y+50,width,height,Config['colors']['green'],Config['colors']['bright_green'],text_color,self.unpause)
+            self.button("Main Menu",pos_x,pos_y+120,width,height,Config['colors']['yellow'],Config['colors']['light_yellow'],text_color,self.start_screen)
+            
             pygame.display.update()
             clock.tick(15)
     
@@ -249,43 +256,61 @@ class Game:
         self.pause = False
 
     def high_score(self):
-        high_name,high_score  = self.read_file("src\highscore.txt")
+        
         your_name = ""
-        if self.score > high_score:
+        if (self.read_file):
             your_name = self.enterbox("New HighScore: Your Name?")
         if your_name == None or len(your_name)==0:
             return
-        self.write_to_file("src\highscore.txt",your_name,self.score)
+        self.write_to_file(your_name,self.score)
         #self.show_top10(self.display,"highscore.txt")
         return
     
-    def read_file(self,file_name):
-        file = open(file_name,'r')
+    def read_file(self):
+        file = open(self.file_name,'r')
         lines = file.readlines()
         file.close()
-
-        high_score = 0
-        high_name = ""
         for line in lines:
             name,score = line.strip().split(",")
             score = int(score)
-            if(score>high_score):
-                high_score = score
-                high_name = name
-        return high_name,high_score
+            if(self.score>=score):
+                return True
+            
+        return False
 
-    def write_to_file(self,file_name,your_name,score):
-        score_file = open(file_name,'a')
+    def write_to_file(self,your_name,score):
+        score_file = open(self.file_name,'a')
         txt = your_name
         txt+=','
         txt+=str(score) 
         print(txt,file= score_file)
         score_file.close()
+        file = open(self.file_name,'r')
+        lines = file.readlines()
+        
+        all_score = []
+        for line in lines:
+            sep = line.index(',')
+            name = line[:sep]
+            score = int(line[sep+1:-1])
+            all_score.append((score,name))
+        file.close()
+
+        all_score.sort(reverse=True)
+        if(len(all_score)>=10):
+            best = all_score[:10]
+        else:
+            best = all_score[:len(all_score)]
+
+        score_file = open(self.file_name,'w')
+        for i in range(len(best)):
+            print(all_score[i][1]+','+str(all_score[i][0]),file = score_file)
+        
     
     def enterbox(self,txt):
         
         def blink():
-            for color in [Config['colors']['gray'],Config['colors']['white']]:
+            for color in [Config['colors']['white'],Config['colors']['black']]:
                 pygame.draw.rect(box,color,(bx//2,by//2,2,18))
                 self.display.blit(box,(6*Config['game']['bumper_size'],6*Config['game']['bumper_size']))
                 pygame.display.flip()
@@ -336,4 +361,51 @@ class Game:
                 blink()
             show_name(name)
 
-    
+    def show_top10(self):
+        bx = int(Config['game']['width']/1.8)
+        by = int(Config['game']['height']/1.5)
+
+        file = open(self.file_name,'r')
+        lines = file.readlines()
+        
+        all_score = []
+        for line in lines:
+            sep = line.index(',')
+            name = line[:sep]
+            score = int(line[sep+1:-1])
+            all_score.append((score,name))
+        file.close()
+
+        all_score.sort(reverse=True)
+        if(len(all_score)>=10):
+            best = all_score[:10]
+        else:
+            best = all_score[:len(all_score)]
+
+        box = pygame.surface.Surface((bx,by))
+        box.fill(Config['colors']['gray'])
+        #pygame.draw.rect(box,Config['colors']['white'],)
+        font = pygame.font.Font('./assets/Now-Regular.otf',18)
+        txt_surf = font.render("HIGHSCORE",True,Config['colors']['black'])
+        txt_rect = txt_surf.get_rect(center= (bx//2,by//10))
+        box.blit(txt_surf,txt_rect)
+
+        for i,entry in enumerate(best):
+            txt_surf = font.render(entry[1] + " " + str(entry[0]),True,Config['colors']['black'])
+            txt_rect = txt_surf.get_rect(center = (bx//2,30*i+80))
+            box.blit(txt_surf,txt_rect)
+        self.display.blit(box,(6*Config['game']['bumper_size'],4*Config['game']['bumper_size']))
+        pygame.display.flip()
+        clock = pygame.time.Clock()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.start_screen()
+            pygame.display.update()
+            clock.tick(15)
+
+        

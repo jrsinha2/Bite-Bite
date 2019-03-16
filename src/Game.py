@@ -185,10 +185,11 @@ class Game:
         end_text_rect = end_text.get_rect(
                 center = (
                     Config['game']['width']/2,   #width of box
-                    Config['game']['height']/2  #height of box
+                    Config['game']['height']//6  #height of box
                 )
             )
         self.display.blit(end_text,end_text_rect)
+        self.high_score()
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -244,8 +245,95 @@ class Game:
             pygame.display.update()
             clock.tick(15)
     
-        
-
     def unpause(self):
         self.pause = False
-     
+
+    def high_score(self):
+        high_name,high_score  = self.read_file("src\highscore.txt")
+        your_name = ""
+        if self.score > high_score:
+            your_name = self.enterbox("New HighScore: Your Name?")
+        if your_name == None or len(your_name)==0:
+            return
+        self.write_to_file("src\highscore.txt",your_name,self.score)
+        #self.show_top10(self.display,"highscore.txt")
+        return
+    
+    def read_file(self,file_name):
+        file = open(file_name,'r')
+        lines = file.readlines()
+        file.close()
+
+        high_score = 0
+        high_name = ""
+        for line in lines:
+            name,score = line.strip().split(",")
+            score = int(score)
+            if(score>high_score):
+                high_score = score
+                high_name = name
+        return high_name,high_score
+
+    def write_to_file(self,file_name,your_name,score):
+        score_file = open(file_name,'a')
+        txt = your_name
+        txt+=','
+        txt+=str(score) 
+        print(txt,file= score_file)
+        score_file.close()
+    
+    def enterbox(self,txt):
+        
+        def blink():
+            for color in [Config['colors']['gray'],Config['colors']['white']]:
+                pygame.draw.rect(box,color,(bx//2,by//2,2,18))
+                self.display.blit(box,(6*Config['game']['bumper_size'],6*Config['game']['bumper_size']))
+                pygame.display.flip()
+                pygame.time.wait(300)
+
+        def show_name(name):
+            pygame.draw.rect(box,Config['colors']['black'],(bx//4,int(by*0.45),int(bx*0.50),50))
+            font = pygame.font.Font('./assets/Now-Regular.otf',18)
+            txt_surf = font.render(name,True,Config['colors']['white'])
+            txt_rect = txt_surf.get_rect(center= (bx//2,(by//2)+9))
+            box.blit(txt_surf,txt_rect)
+            self.display.blit(box,(6*Config['game']['bumper_size'],6*Config['game']['bumper_size']))
+            pygame.display.flip()
+        
+        bx = int(Config['game']['width']/1.8)
+        by = int(Config['game']['height']/1.8)
+                
+        box = pygame.surface.Surface((bx,by))
+        box.fill(Config['colors']['gray'])
+        
+        #pygame.draw.rect(box,Config['colors']['black'],(Config['game']['width']//4,Config['game']['height']//4,bx//4,by//8))
+        font = pygame.font.Font('./assets/Now-Regular.otf',18)
+        txt_surf = font.render(txt,True,Config['colors']['white'])
+        txt_rect = txt_surf.get_rect(center = (bx//2,by//6))
+        box.blit(txt_surf,txt_rect)
+        #self.display.blit(box,(Config['game']['bumper_size'],Config['game']['height']//2))
+        #pygame.display.update()
+        
+        name = ""
+        show_name(name)
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                elif event.type == pygame.KEYDOWN:
+                    inkey = event.key
+                    if inkey in [13,271]:
+                        return name
+                    elif inkey ==8:
+                        name = name[:-1]
+                    elif inkey <=300:
+                        if pygame.key.get_mods() & pygame.KMOD_SHIFT and 122 >= inkey >= 97:
+                            inkey -= 32  # handles CAPITAL input
+                        name += chr(inkey)
+            if name=="":
+                blink()
+            show_name(name)
+
+    

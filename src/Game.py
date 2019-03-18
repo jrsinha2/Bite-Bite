@@ -292,7 +292,7 @@ class Game:
         for line in lines:
             sep = line.index(',')
             name = line[:sep]
-            score = int(line[sep+1:-1])
+            score = int(line[sep+1:])
             all_score.append((score,name))
         file.close()
 
@@ -372,7 +372,7 @@ class Game:
         for line in lines:
             sep = line.index(',')
             name = line[:sep]
-            score = int(line[sep+1:-1])
+            score = int(line[sep+1:])
             all_score.append((score,name))
         file.close()
 
